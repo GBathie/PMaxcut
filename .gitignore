@@ -1,0 +1,11 @@
+# Compilation files :
+*.o
+obj/
+*.d
+main
+
+# Python cache
+_pycache
+
+# Gurobi files
+gurobi.log
