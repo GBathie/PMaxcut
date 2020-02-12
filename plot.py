@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-
+import sys
 
 def read_data(filename):
 	f = open(filename, 'r')
@@ -8,7 +8,7 @@ def read_data(filename):
 	name = ""
 	p = ""
 	x,y,z = [],[],[]
-	txt = f.readlines()[0:]
+	txt = f.readlines()[0:] + ["F /a 1 a a a "] #otherwise we forget a line
 	for l in txt:
 		# print(l)
 		if l[0] == 'F':
@@ -40,7 +40,7 @@ def array_from(data):
 		print(w)
 
 def array():
-	data = read_data("output3.txt")
+	data = read_data(sys.argv[1])
 	print(data)
 	array_from(data)
 

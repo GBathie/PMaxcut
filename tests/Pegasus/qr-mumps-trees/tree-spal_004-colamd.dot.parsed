@@ -1,0 +1,20 @@
+digraph G {
+	graph [file="tree-spal_004-colamd.dot"];
+	node [color=black,
+		fillcolor=white,
+		shape=circle,
+		style=filled
+	];
+	00001	 [flops=60324606816030,
+		label=" node:        1  size: 25393452316 size (tmp): 24970783032 flops:    60324606816030  sflops:    60324606816030",
+		nsize=24970783032,
+		size=25393452316,
+		tmp_memory=24970783032];
+	00002	 [flops=0,
+		label=" node:        2  size:           0 size (tmp):           0 flops:                 0  sflops:    60324606816030",
+		nsize=0,
+		size=0,
+		tmp_memory=0];
+	00001 -> 00002 [key=0,
+	edge_memory=422669284];
+}

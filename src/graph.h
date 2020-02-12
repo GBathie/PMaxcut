@@ -88,4 +88,4 @@ public:
 
 Graph read_graph_from_file(std::string filename, std::string time_label, std::string weight_label, std::string computation_label);
 Graph convert_to_SimpleDataFlow(const Graph &graph);
-Graph generate_dag_ss(int n, double connectedness, double w_max, double t_max);
+Graph generate_dag_ss(int n, double connectedness, double w_max, double t_max, double w_max_edges);

@@ -103,6 +103,7 @@ int Graph::add_edge(int id_from, int id_to, double weight/*=1*/, bool red/*=fals
 	return new_id;
 }
 
+// chech wether there exists a path from a to b using a DFS
 bool Graph::path_exists(int a, int b)
 {
 	vector<bool> seen(n_vertices());
@@ -184,6 +185,8 @@ void Graph::make_single_source_target()
 	}
 }
 
+/* @return string containing a description of the graph in the dot language
+ */
 string Graph::to_string()
 {
 	stringstream res;
@@ -212,7 +215,8 @@ void Graph::write_to_file(string filename)
 
 /********************* Non member functions *********************************/
 /* Convert a graph into SimpleDataFlowModel (see article)
- * Each vertex becomes an edge in the new graph.
+ * Each vertex becomes an edge in the new graph. That edge carries the weight
+ * of the vertex (temporary data) + the weight of its input and outputs
  *
  * @param graph Graph G to transform
  *
@@ -221,7 +225,8 @@ void Graph::write_to_file(string filename)
 Graph convert_to_SimpleDataFlow(const Graph &graph)
 {
 	Graph res;
-	map<int,pair<int,int>> old_new_id_map;
+	map<int,pair<int,int>> old_new_id_map; // Maps each old vertex to the endpoints 
+										   // of the corresponding edge in the new graph
 	int idf, idt;
 	double w;
 	// create all vertices
@@ -231,14 +236,13 @@ Graph convert_to_SimpleDataFlow(const Graph &graph)
 		idt = res.add_vertex();
 		old_new_id_map[v.id] = make_pair(idf, idt);
 		w = v.memory;
+		// Add weights of inputs
 		for (auto e : v.incoming_edges)
-		{
 			w += e->weight;
-		}
+
+		// Add weights of outputs
 		for (auto e : v.outgoing_edges)
-		{
 			w += e->weight;
-		}
 		
 		res.add_edge(idf, idt, w, true);		
 	}
@@ -263,12 +267,13 @@ Graph convert_to_SimpleDataFlow(const Graph &graph)
  *
  * @param n 			Number of vertices
  * @param connectedness Each edge (i,j), i < j exists with probability connectedness
- * @param w_max 		Memory weights are drawn uniformly in [0, w_max)
+ * @param w_max 		Memory weights for vertices are drawn uniformly in [0, w_max)
  * @param t_max 		Time weights are drawn uniformly in [0, t_max)
+ * @param w_max_edges 	Memory weights for edges are drawn uniformly in [0, w_max_edges)
  * 
  * @return a random DAG generated as stated above, converted to SimpleDataFlowModel
  */
-Graph generate_dag_ss(int n, double connectedness, double w_max, double t_max)
+Graph generate_dag_ss(int n, double connectedness, double w_max, double t_max, double w_max_edges)
 {
 	Graph res;
 
@@ -284,7 +289,7 @@ Graph generate_dag_ss(int n, double connectedness, double w_max, double t_max)
 			double d = ((double)random()) / RAND_MAX;
 			if (d < connectedness)
 			{
-				res.add_edge(i, j, (((double)random()) / RAND_MAX) * w_max);
+				res.add_edge(i, j, (((double)random()) / RAND_MAX) * w_max_edges);
 			}
 		}
 	}
@@ -322,20 +327,17 @@ Graph read_graph_from_file(string filename, string time_label, string weight_lab
 	for (auto n = agfstnode(g); n; n = agnxtnode(g,n))
 	{
 		w = t = 0;
-
 		a = stoi(agnameof(n));
 		
+		// Get time info
 		tmp = agget(n, time_label.data());
 		if (tmp != NULL)
-		{
 			t = stod(tmp);
-		}
 
+		// Get weight info
 		tmp = agget(n, weight_label.data());
 		if (tmp != NULL)
-		{
 			w = stod(tmp);
-		}
 
 		file_to_graph_id[a] = res.add_vertex(t, w);
 	}
@@ -348,17 +350,17 @@ Graph read_graph_from_file(string filename, string time_label, string weight_lab
 			w = 0;
 			r = false;
 			b = stoi(agnameof(aghead(e)));
+
+			// Get weight info
 			tmp = agget(e, weight_label.data());
 			if (tmp != NULL)
-			{
 				w = stod(tmp);
-			}
 
+			// Get color info
 			tmp = agget(e, computation_label.data());
 			if (tmp != NULL)
-			{
 				r = stoi(tmp);
-			}
+
 			res.add_edge(file_to_graph_id[a], file_to_graph_id[b], w, r);
 		}
 	}
