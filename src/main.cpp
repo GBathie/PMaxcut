@@ -11,10 +11,6 @@ using namespace std;
 
 /* Compares the value of the maxcut, p-maxcut and an approximation of the p-maxcut
  * on N randomly generated DAGs
- *
- * @param path Path of the folder to test
- * @param p Value of p for the tests
- * @param disp_err [optional] Display additional information about failures
  */
 void test_n_random(int N, int n_vtx, double connectedness, double w_max, double w_e_max, int p, bool disp_err=false)
 {
@@ -24,8 +20,6 @@ void test_n_random(int N, int n_vtx, double connectedness, double w_max, double 
     for (int i = 0; i < N; ++i)
 	{
 		Graph test = generate_dag_ss(n_vtx, connectedness, 0, 0, w_e_max);
-		cerr << test.to_string() << endl;
-		cin >> failures;
 		vector<int> cut, s, t;
 		double maxcut, LPvalue, ILPvalue;
 
