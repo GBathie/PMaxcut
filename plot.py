@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import tikzplotlib as tpl
 import numpy as np
 import sys
 
@@ -38,26 +39,32 @@ def array_from(data):
 	l.sort()
 	for w in l:
 		print(w)
+
 def boxplot(data):
-	lxy = {i:[] for i in ["1","3","5","10"]}
-	lzy = {i:[] for i in ["1","3","5","10"]}
-	n = {i:[] for i in ["1","3","5","10"]}
+	lxy = {}
+	lzy = {}
+	n 	= {}
 	for d in data:
 		name, x, y, z, p = d
 		ax, ay, az = np.array(x), np.array(y), np.array(z)
-		lxy[p].append(ax/ay) 
-		lzy[p].append(az/ay) 
-		n[p].append(name)
-	for p in ["1","3","5","10"]:
+		if name not in lxy:
+			lxy[name] = []
+			lzy[name] = []
+			n[name] = []
+		lxy[name].append(ax/ay) 
+		lzy[name].append(az/ay) 
+		n[name].append(p)
+	for name in lxy:
 		plt.figure()
-		plt.title("Ratio maxcut/p-maxcut, p = " + p)
-		plt.boxplot(lxy[p], labels=n[p],showfliers=False)
-		plt.savefig("boxplot_xy_"+p+".png")
+		plt.title("Ratio maxcut/p-maxcut for " + name)
+		plt.boxplot(lxy[name], labels=n[name],showfliers=False)
+		tpl.save("boxplot_xy_" + name +".tex")
 		
 		plt.figure()
-		plt.title("Ratio p-maxcut*/p-maxcut, p = " + p)
-		plt.boxplot(lzy[p], labels=n[p],showfliers=False)
-		plt.savefig("boxplot_zy"+p+".png")
+		plt.title("Ratio p-maxcut*/p-maxcut, p = " + name)
+		plt.boxplot(lzy[name], labels=n[name],showfliers=False)
+		# plt.savefig("boxplot_zy"+p+".pdf")
+		tpl.save("boxplot_zy_"+name+".tex")
 
 def array():
 	data = read_data(sys.argv[1])
